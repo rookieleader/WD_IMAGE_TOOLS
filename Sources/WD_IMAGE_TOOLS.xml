@@ -1,0 +1,1224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CONTAINER NAME="WD_IMAGE_TOOLS" VERSION="1.0" CLASS="ZAPLINK_CONTAINER">
+ <ZL_OBJECT CHECKSUM="848E98A6C06A7CB1BF1589C7D955D8A4" CODE_SIGNATURE="ED83AE047D49B3E160037E1ED0030699" CONNECTOR="39AC0A4B07A5A05AE1000000AC120173" NAME="ZCL_IMG_POSTE_TECH" TYPE="CLAS" VERSION="1.01">
+  <DEPENDENCIES>
+   <ITEM TYPE="CLAS" NAME="ZCL_UTIL_IMG"/>
+  </DEPENDENCIES>
+  <DIRECTORY SRCSYSTEM="GG1" AUTHOR="PIGNON_E" DEVCLASS="Z_RAPS_GMAO_PM" MASTERLANG="F"/>
+  <RAW>
+   <A0_MAINDATA VERSION="1" LANGU="F" EXPOSURE="2" STATE="1" AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="700">
+    <INHERITANCE REFCLSNAME="ZCL_UTIL_IMG" VERSION="1" STATE="1" AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131"/>
+    <TEXTS>
+     <ITEM LANG="F" TEXT="Extention gestion document poste technique">U1&amp;FUNCTIONALITY&amp;
+AS
+U1&amp;RELATIONS&amp;
+AS
+U1&amp;EXAMPLE&amp;
+AS
+U1&amp;HINTS&amp;
+AS
+U1&amp;FURTHER_SOURCES_OF_INF&amp;
+ASThis program is part of WD_IMAGE_TOOLS framework.
+ASCopyright (C) 2013  Estelle PIGNON &amp; Sebastien GIRAUD
+/
+/ This program is free software: you can redistribute it and/or modify
+/ it under the terms of the GNU General Public License as published by
+/ the Free Software Foundation, either version 3 of the License, or
+/ (at your option) any later version.
+/
+/ This program is distributed in the hope that it will be useful&lt;(&gt;,&lt;)&gt;
+/ but WITHOUT ANY WARRANTY; without even the implied warranty of
+/ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/ GNU General Public License for more details.
+/
+/ You should have received a copy of the GNU General Public License
+/ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+AS</ITEM>
+    </TEXTS>
+   </A0_MAINDATA>
+   <ATTRIBUTS>
+    <ITEM CMPNAME="C_OBJTYP" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;IFLOT&apos;" TYPTYPE="1" TYPE="DOKOB" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Objet SAP relié"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="C_PJ_PHOTO" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;ZD1&apos;" TYPTYPE="1" TYPE="DOKAR" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Type de document"/>
+     </TEXTS>
+    </ITEM>
+   </ATTRIBUTS>
+   <LOCAL>
+    <TYPES>`
+*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</TYPES>
+    <IMPLEMENTATIONS>`
+*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</IMPLEMENTATIONS>
+    <MACROS>`
+*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</MACROS>
+   </LOCAL>
+   <METHODS>
+    <ITEM CMPNAME="CONSTRUCTOR" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" MTDTYPE="2" R3RELEASE="700">
+     <PARAMETERS>
+      <ITEM SCONAME="I_HEIGHT" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="3 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" TYPTYPE="1" TYPE="I" PAROPTIONL="X"/>
+      <ITEM SCONAME="I_OBJECTKEY" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_THUMBNAIL" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" TYPTYPE="1" TYPE="BOOLEAN">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_WIDTH" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="4 " AUTHOR="PIGNON_E" CREATEDON="20130131" TYPTYPE="1" TYPE="I" PAROPTIONL="X"/>
+     </PARAMETERS>
+     <SOURCE>`
+
+  super-&gt;constructor( ).
+  objectkey = i_objectkey.
+  height    = i_height.
+  width     = i_width.
+  thumbnail = i_thumbnail.
+
+  IF objectkey IS NOT INITIAL.
+
+    CALL METHOD me-&gt;get_url_by_object( ) .
+
+  ENDIF.</SOURCE>
+    </ITEM>
+   </METHODS>
+   <REDEFINITIONS>
+    <ITEM REFCLSNAME="ZCL_UTIL_IMG" VERSION="1" MTDNAME="RECUPERERIMAGE">
+     <SOURCE>`
+
+  DATA lt_docs        TYPE TABLE OF bapi_doc_keys.
+  DATA ls_doc         TYPE bapi_doc_keys.
+  DATA lt_pj          TYPE TABLE OF drao.
+  DATA ls_pj          TYPE drao.
+  DATA lv_objkey      TYPE objky.
+
+  lv_objkey = i_objectkey.
+
+  CALL FUNCTION &apos;BAPI_DOCUMENT_GETOBJECTDOCS&apos;
+    EXPORTING
+      objecttype   = c_objtyp
+      objectkey    = lv_objkey
+    TABLES
+      documentlist = lt_docs.
+
+  READ TABLE lt_docs INTO ls_doc
+                 WITH KEY documenttype = c_pj_photo.
+
+  SELECT *
+    FROM drao
+    INTO CORRESPONDING FIELDS OF TABLE lt_pj
+   WHERE dokar EQ ls_doc-documenttype
+     AND doknr EQ ls_doc-documentnumber
+     AND dokvr EQ ls_doc-documentversion
+     AND doktl EQ ls_doc-documentpart
+     AND appnr EQ &apos;1&apos;.
+
+  LOOP AT lt_pj INTO ls_pj.
+    CONCATENATE e_file ls_pj-orblk INTO e_file IN BYTE MODE.
+  ENDLOOP.
+  e_size = ls_pj-orln.</SOURCE>
+    </ITEM>
+   </REDEFINITIONS>
+  </RAW>
+ </ZL_OBJECT>
+ <ZL_OBJECT CHECKSUM="47CAD9CEE136B10FEE3566A6611DF90D" CODE_SIGNATURE="476EE057F6CA8CD041E9035D848EA67F" CONNECTOR="39AC0A4B07A5A05AE1000000AC120173" NAME="ZCL_UTIL_CACHE_IMG" TYPE="CLAS" VERSION="1.01">
+  <DIRECTORY SRCSYSTEM="GG1" AUTHOR="GIRAUD_S" DEVCLASS="Z_RAPS_GMAO_PM" MASTERLANG="F"/>
+  <RAW>
+   <A0_MAINDATA VERSION="1" LANGU="F" STATE="1" AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="700">
+    <TEXTS>
+     <ITEM LANG="F" TEXT="Gestion des caches images web dynpro">U1&amp;FUNCTIONALITY&amp;
+AS
+U1&amp;RELATIONS&amp;
+AS
+U1&amp;EXAMPLE&amp;
+AS
+U1&amp;HINTS&amp;
+AS
+U1&amp;FURTHER_SOURCES_OF_INF&amp;
+ASThis program is part of WD_IMAGE_TOOLS framework.
+ASCopyright (C) 2013  Estelle PIGNON &amp; Sebastien GIRAUD
+/
+/ This program is free software: you can redistribute it and/or modify
+/ it under the terms of the GNU General Public License as published by
+/ the Free Software Foundation, either version 3 of the License, or
+/ (at your option) any later version.
+/
+/ This program is distributed in the hope that it will be useful&lt;(&gt;,&lt;)&gt;
+/ but WITHOUT ANY WARRANTY; without even the implied warranty of
+/ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/ GNU General Public License for more details.
+/
+/ You should have received a copy of the GNU General Public License
+/ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</ITEM>
+    </TEXTS>
+   </A0_MAINDATA>
+   <ATTRIBUTS>
+    <ITEM CMPNAME="APPLICATION_NAME" VERSION="1" STATE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="EXPIRATION_DELAY" VERSION="1" STATE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" TYPTYPE="1" TYPE="I" R3RELEASE="700"/>
+    <ITEM CMPNAME="IT_CACHE" VERSION="1" STATE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" TYPTYPE="1" TYPE="ZPMIT_PTCACHEDTHUMBNAIL" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Table des caches images postes techniques"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="SINGLETON_CACHE" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="4 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" ATTDECLTYP="1" TYPTYPE="3" TYPE="ZCL_UTIL_CACHE_IMG" R3RELEASE="700"/>
+   </ATTRIBUTS>
+   <LOCAL>
+    <TYPES>`
+*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</TYPES>
+    <IMPLEMENTATIONS>`
+*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</IMPLEMENTATIONS>
+    <MACROS>`
+*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</MACROS>
+   </LOCAL>
+   <METHODS>
+    <ITEM CMPNAME="ADD_IMG_TO_CACHE" VERSION="1" STATE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" R3RELEASE="700">
+     <PARAMETERS>
+      <ITEM SCONAME="I_HEIGHT" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+      <ITEM SCONAME="I_STREAM" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="I_THUMBNAIL" VERSION="1" CMPTYPE="1" EDITORDER="4 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_WIDTH" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+      <ITEM SCONAME="RETURN" VERSION="1" CMPTYPE="1" EDITORDER="5 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARDECLTYP="3" TYPTYPE="1" TYPE="ZPMST_PTCACHEDTHUMBNAIL">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Cache pour les images"/>
+       </TEXTS>
+      </ITEM>
+     </PARAMETERS>
+     <SOURCE>`
+  DATA lo_util_img TYPE REF TO zcl_util_img.
+  DATA lv_datum TYPE sy-datum.
+  DATA lv_uzeit TYPE sy-uzeit.
+  DATA lv_timezone TYPE tznzone.
+  DATA lv_timestamp TYPE timestamp.
+  DATA ls_image_data TYPE zpm_st_image.
+  DATA ls_cache TYPE zpmst_ptcachedthumbnail.
+  DATA lv_guid TYPE guid_32.
+
+  CALL FUNCTION &apos;GUID_CREATE&apos;
+    IMPORTING
+      ev_guid_32 = lv_guid.
+
+  CREATE OBJECT lo_util_img
+    TYPE
+      (zcl_util_img=&gt;type_stream)
+    EXPORTING
+      i_stream        = i_stream
+      i_thumbnail     = i_thumbnail
+      i_height        = i_height
+      i_width         = i_width.
+
+  CALL FUNCTION &apos;BDL_GET_CENTRAL_TIMESTAMP&apos;
+    IMPORTING
+      tag     = lv_datum
+      uhrzeit = lv_uzeit.
+
+  CONVERT DATE lv_datum TIME lv_uzeit INTO TIME STAMP lv_timestamp TIME ZONE lv_timezone.
+
+  lv_timestamp = lv_timestamp + expiration_delay.
+
+  ls_image_data = lo_util_img-&gt;get_file_data( ).
+
+  IF NOT ls_image_data-image IS INITIAL.
+    ls_cache-urlimage = generate_cached_url( i_file = ls_image_data-image
+                                             i_mime_type = ls_image_data-mime_type ).
+  ENDIF.
+
+  IF NOT ls_image_data-thumbnail IS INITIAL AND i_thumbnail = abap_true.
+    ls_cache-urlthumbnail = generate_cached_url( i_file = ls_image_data-thumbnail
+                                                 i_mime_type = ls_image_data-mime_type ).
+  ENDIF.
+
+  ls_cache-object_key = lv_guid.
+  ls_cache-object_type = zcl_util_img=&gt;type_stream.
+  ls_cache-validity_time = lv_timestamp.
+
+  READ TABLE it_cache TRANSPORTING NO FIELDS
+    WITH KEY object_key = ls_cache-object_key
+             object_type = zcl_util_img=&gt;type_stream.
+
+  IF sy-subrc EQ 0.
+    MODIFY it_cache INDEX sy-tabix FROM ls_cache.
+  ELSE.
+    APPEND ls_cache TO it_cache.
+  ENDIF.
+
+  return = ls_cache.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="ADD_IMG_TO_CACHE_BY_KEY" VERSION="1" STATE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Ajout de l&apos;image d&apos;un objet au cache"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="I_HEIGHT" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="I" PAROPTIONL="X">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Nouvelle auteur souhaitée"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_OBJECT_KEY" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_OBJECT_TYPE" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_THUMBNAIL" VERSION="1" CMPTYPE="1" EDITORDER="5 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_WIDTH" VERSION="1" CMPTYPE="1" EDITORDER="4 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="I" PAROPTIONL="X">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Nouvelle auteur souhaitée"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="RETURN" VERSION="1" CMPTYPE="1" EDITORDER="6 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARDECLTYP="3" TYPTYPE="1" TYPE="ZPMST_PTCACHEDTHUMBNAIL">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Cache pour les images"/>
+       </TEXTS>
+      </ITEM>
+     </PARAMETERS>
+     <SOURCE>`
+  DATA lo_util_img TYPE REF TO zcl_util_img.
+  DATA lv_datum TYPE sy-datum.
+  DATA lv_uzeit TYPE sy-uzeit.
+  DATA lv_timezone TYPE tznzone.
+  DATA lv_timestamp TYPE timestamp.
+  DATA ls_image_data TYPE zpm_st_image.
+  DATA ls_cache TYPE zpmst_ptcachedthumbnail.
+
+  CREATE OBJECT lo_util_img
+    TYPE
+      (i_object_type)
+    EXPORTING
+      i_objectkey     = i_object_key
+      i_thumbnail     = i_thumbnail
+      i_height        = i_height
+      i_width        = i_width.
+
+  CALL FUNCTION &apos;BDL_GET_CENTRAL_TIMESTAMP&apos;
+    IMPORTING
+      tag     = lv_datum
+      uhrzeit = lv_uzeit.
+
+  CONVERT DATE lv_datum TIME lv_uzeit INTO TIME STAMP lv_timestamp TIME ZONE lv_timezone.
+
+  lv_timestamp = lv_timestamp + expiration_delay.
+
+
+  ls_image_data = lo_util_img-&gt;get_file_data( ).
+
+  IF NOT ls_image_data-image IS INITIAL.
+    ls_cache-urlimage = generate_cached_url( i_file = ls_image_data-image
+                                             i_mime_type = ls_image_data-mime_type ).
+  ENDIF.
+
+  IF NOT ls_image_data-thumbnail IS INITIAL AND i_thumbnail = abap_true.
+    ls_cache-urlthumbnail = generate_cached_url( i_file = ls_image_data-thumbnail
+                                                 i_mime_type = ls_image_data-mime_type ).
+  ENDIF.
+
+  ls_cache-object_key = i_object_key.
+  ls_cache-object_type = i_object_type.
+  ls_cache-validity_time = lv_timestamp.
+
+  READ TABLE it_cache TRANSPORTING NO FIELDS
+    WITH KEY object_key = i_object_key
+             object_type = i_object_type.
+
+  IF sy-subrc EQ 0.
+    MODIFY it_cache INDEX sy-tabix FROM ls_cache.
+  ELSE.
+    APPEND ls_cache TO it_cache.
+  ENDIF.
+
+  return = ls_cache.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="CONSTRUCTOR" VERSION="1" STATE="1" EDITORDER="8 " AUTHOR="GIRAUD_S" CREATEDON="20130131" MTDTYPE="2" R3RELEASE="700">
+     <PARAMETERS>
+      <ITEM SCONAME="I_APPLICATION_NAME" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_EXPIRATION_DELAY" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+     </PARAMETERS>
+     <SOURCE>`
+  me-&gt;application_name = i_application_name.
+  me-&gt;expiration_delay = i_expiration_delay.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GENERATE_CACHED_URL" VERSION="1" STATE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" R3RELEASE="700">
+     <PARAMETERS>
+      <ITEM SCONAME="I_FILE" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="I_MIME_TYPE" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="RETURN" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARDECLTYP="3" TYPTYPE="1" TYPE="STRING"/>
+     </PARAMETERS>
+     <SOURCE>`
+  DATA cached_response TYPE REF TO if_http_response.
+  DATA lv_mime_type TYPE string.
+  DATA lv_guid TYPE guid_32.
+
+  CALL FUNCTION &apos;GUID_CREATE&apos;
+    IMPORTING
+      ev_guid_32 = lv_guid.
+
+  CREATE OBJECT cached_response
+    TYPE
+      cl_http_response
+    EXPORTING
+      add_c_msg        = 1.
+
+  lv_mime_type = i_mime_type.
+
+  TRANSLATE lv_mime_type TO UPPER CASE.
+
+* SET IMAGE TO MIME
+  cached_response-&gt;set_data( i_file ).
+  cached_response-&gt;set_header_field( name = if_http_header_fields=&gt;content_type
+                                     value = lv_mime_type ).
+
+  cached_response-&gt;set_status( code = 200 reason = &apos;OK&apos; ).
+  cached_response-&gt;server_cache_expire_rel( expires_rel = expiration_delay ).
+
+  cl_wd_utilities=&gt;construct_wd_url(
+        EXPORTING
+          application_name = me-&gt;application_name &quot;WEBDYNPRO APPLICATION NAME
+        IMPORTING
+          out_local_url = return ).
+
+  CONCATENATE return &apos;/&apos; lv_guid sy-uzeit INTO return.
+  cl_http_server=&gt;server_cache_upload( url = return
+                                       response = cached_response ).</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GET_CACHED_URL" VERSION="1" STATE="1" EDITORDER="4 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="récupération des urls des images dans le cache"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="I_OBJECT_KEY" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_OBJECT_TYPE" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING" PAROPTIONL="X"/>
+      <ITEM SCONAME="RETURN" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARDECLTYP="3" TYPTYPE="1" TYPE="ZPMST_PTCACHEDTHUMBNAIL">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Cache pour les images"/>
+       </TEXTS>
+      </ITEM>
+     </PARAMETERS>
+     <SOURCE>`
+  DATA lv_datum TYPE sy-datum.
+  DATA lv_uzeit TYPE sy-uzeit.
+  DATA lv_timezone TYPE tznzone.
+  DATA lv_timestamp TYPE timestamp.
+
+  CALL FUNCTION &apos;BDL_GET_CENTRAL_TIMESTAMP&apos;
+    IMPORTING
+      tag     = lv_datum
+      uhrzeit = lv_uzeit.
+
+  &quot;délai pour s&apos;assurer que l&apos;url n&apos;expire pas avant la fin du traitement.
+  lv_uzeit = lv_uzeit + 3.
+
+  CONVERT DATE lv_datum TIME lv_uzeit INTO TIME STAMP lv_timestamp TIME ZONE lv_timezone.
+
+  READ TABLE it_cache INTO return
+                      WITH KEY object_key = i_object_key
+                               object_type = i_object_type.
+
+  IF sy-subrc EQ 0 AND lv_timestamp &gt; return-validity_time.
+    CLEAR return.
+  ENDIF.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GET_IMAGE_URL_BY_KEY" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="6 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Récupération d&apos;url en cache depuis un objet SAP"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="E_IMG_URL" VERSION="1" CMPTYPE="1" EDITORDER="6 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="E_THUMBNAIL_URL" VERSION="1" CMPTYPE="1" EDITORDER="7 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_HEIGHT" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="I" PAROPTIONL="X"/>
+      <ITEM SCONAME="I_OBJECT_KEY" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_OBJECT_TYPE" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_THUMBNAIL" VERSION="1" CMPTYPE="1" EDITORDER="5 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_WIDTH" VERSION="1" CMPTYPE="1" EDITORDER="4 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="I" PAROPTIONL="X"/>
+     </PARAMETERS>
+     <SOURCE>`
+  DATA ls_cache TYPE zpmst_ptcachedthumbnail.
+  ls_cache = get_cached_url( i_object_key = i_object_key i_object_type = i_object_type ).
+
+  IF ls_cache IS INITIAL.
+    ls_cache = add_img_to_cache_by_key( i_object_key = i_object_key
+                                        i_object_type = i_object_type
+                                        i_height = i_height
+                                        i_width = i_width
+                                        i_thumbnail = i_thumbnail ).
+  ENDIF.
+  e_img_url = ls_cache-urlimage.
+  e_thumbnail_url = ls_cache-urlthumbnail.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GET_IMAGE_URL_BY_STREAM" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="7 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Récupération d&apos;url en cache depuis un flux"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="E_GUID" VERSION="1" CMPTYPE="1" EDITORDER="8 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="GUID_32">
+       <TEXTS>
+        <ITEM LANG="F" TEXT='ID unique au format &quot;CHAR&quot;, en majuscules'/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="E_IMG_URL" VERSION="1" CMPTYPE="1" EDITORDER="6 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="E_THUMBNAIL_URL" VERSION="1" CMPTYPE="1" EDITORDER="7 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_GUID" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="GUID_32">
+       <TEXTS>
+        <ITEM LANG="F" TEXT='ID unique au format &quot;CHAR&quot;, en majuscules'/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_HEIGHT" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130201" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+      <ITEM SCONAME="I_STREAM" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="I_THUMBNAIL" VERSION="1" CMPTYPE="1" EDITORDER="5 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_WIDTH" VERSION="1" CMPTYPE="1" EDITORDER="4 " AUTHOR="GIRAUD_S" CREATEDON="20130201" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+     </PARAMETERS>
+     <SOURCE>`
+  DATA ls_cache TYPE zpmst_ptcachedthumbnail.
+  DATA lv_string_guid TYPE string.
+
+  lv_string_guid = i_guid.
+  ls_cache = get_cached_url( i_object_key = lv_string_guid i_object_type = zcl_util_img=&gt;type_stream ).
+
+  IF ls_cache IS INITIAL.
+    ls_cache = add_img_to_cache( i_height = i_height
+                                 i_width = i_width
+                                 i_stream = i_stream
+                                 i_thumbnail = i_thumbnail ).
+  ENDIF.
+  e_guid = ls_cache-object_key.
+  e_img_url = ls_cache-urlimage.
+  e_thumbnail_url = ls_cache-urlthumbnail.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GET_INSTANCE" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="5 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" MTDDECLTYP="1" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Création singleton ZCL_UTIL_CACHE_IMG"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="I_APPLICATION_NAME" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="STRING"/>
+      <ITEM SCONAME="I_EXPIRATION_DELAY" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+      <ITEM SCONAME="RETURN" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130131" PARDECLTYP="3" TYPTYPE="3" TYPE="ZCL_UTIL_CACHE_IMG">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Gestion des caches images web dynpro"/>
+       </TEXTS>
+      </ITEM>
+     </PARAMETERS>
+     <SOURCE>`
+  IF zcl_util_cache_img=&gt;singleton_cache IS INITIAL.
+    CREATE OBJECT zcl_util_cache_img=&gt;singleton_cache
+      EXPORTING i_application_name = i_application_name
+                i_expiration_delay = i_expiration_delay.
+  ENDIF.
+  return = singleton_cache.</SOURCE>
+    </ITEM>
+   </METHODS>
+   <TYPEGROUPS>
+    <ITEM TYPEGROUP="ABAP" VERSION="1" EXPLICIT="X"/>
+   </TYPEGROUPS>
+  </RAW>
+ </ZL_OBJECT>
+ <ZL_OBJECT CHECKSUM="89730235C1566115F32D4D0E3E73ACF9" CODE_SIGNATURE="1385B38A7109AC598A24D659EC32CF0F" CONNECTOR="39AC0A4B07A5A05AE1000000AC120173" NAME="ZCL_UTIL_IMG" TYPE="CLAS" VERSION="1.01">
+  <DIRECTORY SRCSYSTEM="GG1" AUTHOR="PIGNON_E" DEVCLASS="Z_RAPS_GMAO_PM" MASTERLANG="F"/>
+  <RAW>
+   <A0_MAINDATA VERSION="1" LANGU="F" EXPOSURE="2" STATE="1" AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" CLSABSTRCT="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="700">
+    <TEXTS>
+     <ITEM LANG="F" TEXT="Classe abstraite gestion image">U1&amp;FUNCTIONALITY&amp;
+AS
+U1&amp;RELATIONS&amp;
+AS
+U1&amp;EXAMPLE&amp;
+AS
+U1&amp;HINTS&amp;
+AS
+U1&amp;FURTHER_SOURCES_OF_INF&amp;
+ASThis program is part of WD_IMAGE_TOOLS framework.
+ASCopyright (C) 2013  Estelle PIGNON &amp; Sebastien GIRAUD
+/
+/ This program is free software: you can redistribute it and/or modify
+/ it under the terms of the GNU General Public License as published by
+/ the Free Software Foundation, either version 3 of the License, or
+/ (at your option) any later version.
+/
+/ This program is distributed in the hope that it will be useful&lt;(&gt;,&lt;)&gt;
+/ but WITHOUT ANY WARRANTY; without even the implied warranty of
+/ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/ GNU General Public License for more details.
+/
+/ You should have received a copy of the GNU General Public License
+/ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+AS</ITEM>
+    </TEXTS>
+   </A0_MAINDATA>
+   <ATTRIBUTS>
+    <ITEM CMPNAME="FILE" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="4 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" TYPTYPE="1" TYPE="XSTRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="FILE_DATA" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" TYPTYPE="1" TYPE="ZPM_ST_IMAGE" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Structure Image"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="GIF_FORMAT" VERSION="1" STATE="1" EDITORDER="7 " AUTHOR="PIGNON_E" CREATEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;gif&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante GIF"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="HEIGHT" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" TYPTYPE="1" TYPE="I" R3RELEASE="700"/>
+    <ITEM CMPNAME="IDENT_GIF_FORMAT" VERSION="1" STATE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;474946383961&apos;" TYPTYPE="4" R3RELEASE="700">
+     ident_gif_format TYPE x LENGTH 6
+`
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante identifiant le format GIF"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="IDENT_JPEG_EOI" VERSION="1" STATE="1" EDITORDER="5 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;FFD9&apos;" TYPTYPE="4" R3RELEASE="700">
+     ident_jpeg_eoi TYPE x LENGTH 2
+`
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante fin fichier JPEG"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="IDENT_JPEG_SIZE" VERSION="1" STATE="1" EDITORDER="3 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;FFC0001108&apos;" TYPTYPE="4" R3RELEASE="700">
+     ident_jpeg_size TYPE x LENGTH 5
+`
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante marqueur taille JPEG"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="IDENT_JPEG_SOI" VERSION="1" STATE="1" EDITORDER="4 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;FFD8&apos;" TYPTYPE="4" R3RELEASE="700">
+     ident_jpeg_soi TYPE x LENGTH 2
+`
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante début fichier JPEG"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="IDENT_PNG_FORMAT" VERSION="1" STATE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;89504E47&apos;" TYPTYPE="4" R3RELEASE="700">
+     ident_png_format TYPE x LENGTH 4
+`
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante identifiant le format PNG"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="JPEG_FORMAT" VERSION="1" STATE="1" EDITORDER="6 " AUTHOR="PIGNON_E" CREATEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;jpeg&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante JPEG"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="MIME_GIF" VERSION="1" STATE="1" EDITORDER="10 " AUTHOR="PIGNON_E" CREATEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;image/gif&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="MIME_JPEG" VERSION="1" STATE="1" EDITORDER="9 " AUTHOR="PIGNON_E" CREATEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;image/jpeg&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="MIME_PNG" VERSION="1" STATE="1" EDITORDER="11 " AUTHOR="PIGNON_E" CREATEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;image/png&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="OBJECTKEY" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="3 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="PNG_FORMAT" VERSION="1" STATE="1" EDITORDER="8 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;png&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Constante PNG"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="THUMBNAIL" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" TYPTYPE="1" TYPE="BOOLEAN" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+     </TEXTS>
+    </ITEM>
+    <ITEM CMPNAME="TYPE_STREAM" VERSION="1" EXPOSURE="2" STATE="1" AUTHOR="GIRAUD_S" CREATEDON="20130201" ATTDECLTYP="2" ATTVALUE="&apos;ZCL_UTIL_IMG_STREAM&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="TYPE_TPLNR" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="5 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" ATTDECLTYP="2" ATTVALUE="&apos;ZCL_IMG_POSTE_TECH&apos;" TYPTYPE="1" TYPE="STRING" R3RELEASE="700"/>
+    <ITEM CMPNAME="WIDTH" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" TYPTYPE="1" TYPE="I" R3RELEASE="700"/>
+   </ATTRIBUTS>
+   <LOCAL>
+    <TYPES>`
+*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</TYPES>
+    <IMPLEMENTATIONS>`
+*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</IMPLEMENTATIONS>
+    <MACROS>`
+*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</MACROS>
+   </LOCAL>
+   <METHODS>
+    <ITEM CMPNAME="GET_FILE_DATA" VERSION="1" EXPOSURE="2" STATE="1" EDITORDER="6 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Renvoi des données"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="R_URL" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARDECLTYP="3" TYPTYPE="1" TYPE="ZPM_ST_IMAGE">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="Structure Image"/>
+       </TEXTS>
+      </ITEM>
+     </PARAMETERS>
+     <SOURCE>`
+
+  r_url = me-&gt;file_data.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GET_URL_BY_OBJECT" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="7 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Construction URL avec un objet"/>
+     </TEXTS>
+     <SOURCE>`
+
+  DATA lv_file    TYPE xstring.
+  DATA lv_offset  TYPE i.
+
+* Si objet en entrée alors on doit aller récupérer le fichier IMG
+  IF me-&gt;file IS INITIAL.
+*  IF me-&gt;file IS NOT INITIAL.
+
+    CALL METHOD me-&gt;recupererimage
+      EXPORTING
+        i_objectkey = me-&gt;objectkey
+      IMPORTING
+        e_file      = lv_file
+        e_size      = lv_offset.
+
+  ENDIF.
+
+* Si fichier non vide alors on regarde l&apos;extension
+  IF lv_file IS NOT INITIAL.
+
+    lv_offset = lv_offset - 2.
+
+* recherche format GIF
+    IF lv_file(6) = zcl_util_img=&gt;ident_gif_format.
+      me-&gt;file_data-mime_type = zcl_util_img=&gt;mime_gif.
+* recherche format PNG
+    ELSEIF lv_file(4) = zcl_util_img=&gt;ident_png_format.
+      me-&gt;file_data-mime_type = zcl_util_img=&gt;mime_png.
+* recherche format JPEG
+    ELSEIF lv_file(2) = zcl_util_img=&gt;ident_jpeg_soi AND
+         lv_file+lv_offset(2) = zcl_util_img=&gt;ident_jpeg_eoi.
+      me-&gt;file_data-mime_type = zcl_util_img=&gt;mime_jpeg.
+    ELSE.
+      &quot;GROSSE ERREUR QUI FAIT MAL.
+    ENDIF.
+
+    me-&gt;file_data-image = lv_file.
+
+* Si on souhaite l&apos;URL de l&apos;image redimensionnée
+    IF me-&gt;thumbnail EQ &apos;X&apos;.
+
+      CALL METHOD me-&gt;recalculimage
+        CHANGING
+          c_file = lv_file.
+
+      me-&gt;file_data-thumbnail = lv_file.
+
+    ENDIF.
+
+  ENDIF.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="GET_URL_FLUX" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="8 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Construction URL avec un flux"/>
+     </TEXTS>
+     <SOURCE>`
+
+  DATA lv_file    TYPE xstring.
+  DATA lv_offset  TYPE i.
+
+  IF me-&gt;file IS NOT INITIAL.
+    lv_file = me-&gt;file.
+  ENDIF.
+
+* Si fichier non vide alors on regarde l&apos;extension
+  IF lv_file IS NOT INITIAL.
+
+    lv_offset = XSTRLEN( lv_file ) - 2.
+
+* recherche format GIF
+    IF lv_file(6) = zcl_util_img=&gt;ident_gif_format.
+      me-&gt;file_data-mime_type = zcl_util_img=&gt;mime_gif.
+* recherche format PNG
+    ELSEIF lv_file(4) = zcl_util_img=&gt;ident_png_format.
+      me-&gt;file_data-mime_type = zcl_util_img=&gt;mime_png.
+* recherche format JPEG
+    ELSEIF lv_file(2) = zcl_util_img=&gt;ident_jpeg_soi AND
+         lv_file+lv_offset(2) = zcl_util_img=&gt;ident_jpeg_eoi.
+      me-&gt;file_data-mime_type = zcl_util_img=&gt;mime_jpeg.
+    ELSE.
+      &quot;GROSSE ERREUR QUI FAIT MAL.
+    ENDIF.
+
+    me-&gt;file_data-image = lv_file.
+
+* Si on souhaite l&apos;URL de l&apos;image redimensionnée
+    IF me-&gt;thumbnail EQ &apos;X&apos;.
+
+      CALL METHOD me-&gt;recalculimage
+        CHANGING
+          c_file = lv_file.
+
+      me-&gt;file_data-thumbnail = lv_file.
+
+    ENDIF.
+
+  ENDIF.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="RECALCULIMAGE" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="5 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Recalcul taille Image"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="C_FILE" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" PARDECLTYP="2" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+     </PARAMETERS>
+     <SOURCE>`
+
+  CASE me-&gt;file_data-mime_type.
+    WHEN zcl_util_img=&gt;mime_png.
+      c_file = resize_png( c_file ).
+    WHEN zcl_util_img=&gt;mime_jpeg.
+      c_file = resize_jpeg( c_file ).
+    WHEN zcl_util_img=&gt;mime_gif.
+      c_file = resize_gif( c_file ).
+    WHEN OTHERS.
+  ENDCASE.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="RECUPERERIMAGE" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="4 " AUTHOR="PIGNON_E" CREATEDON="20130131" CHANGEDBY="PIGNON_E" CHANGEDON="20130131" MTDABSTRCT="X" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Récupération Image"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="E_FILE" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="E_SIZE" VERSION="1" CMPTYPE="1" EDITORDER="3 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+      <ITEM SCONAME="I_OBJECTKEY" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" TYPTYPE="1" TYPE="STRING"/>
+     </PARAMETERS>
+    </ITEM>
+    <ITEM CMPNAME="RESIZE_GIF" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Méthode pour redimensionner un GIF"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="I_FILE" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="R_THUMBNAIL_URL" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARDECLTYP="3" TYPTYPE="1" TYPE="XSTRING"/>
+     </PARAMETERS>
+     <SOURCE>`
+****************************************************************
+*/ Format GIF norme GIF89a                                    /*
+*byte#  hexadecimal  text or
+*(hex)               value       Meaning
+*0:     47 49 46
+*       38 39 61     GIF89a      Header
+*                                Logical Screen Descriptor
+*6:     03 00        3            - logical screen width in pixels
+*8:     05 00        5            - logical screen height in pixels
+*A:     F7                        - GCT follows for 256 colors with resolution 3 x 8 bits/primary
+*B:     00           0            - background color #0
+*C:     00                        - default pixel aspect ratio
+*                   R    G    B  Global Color Table
+*D:     00 00 00    0    0    0   - color #0 black
+*10:    80 00 00  128    0    0   - color #1
+* :                                       :
+*85:    00 00 00    0    0    0   - color #40 black
+* :                                       :
+*30A:   FF FF FF  255  255  255   - color #255 white
+*30D:   21 F9                    Graphic Control Extension
+*30F:   04           4            - 4 bytes of GCE data follow
+*310:   01                        - there is a transparent background color
+*311:   00 00                     - delay for animation: not used
+*313:   10          16            - color #16 is transparent
+*314:   00                        - end of GCE block
+*315:   2C                       Image Descriptor
+*316:   00 00 00 00 (0,0)         - NW corner position of image in logical screen
+*31A:   03 00 05 00 (3,5)         - image width and height in pixels
+*31E:   00                        - no local color table
+*31F:   08           8           Start of image - LZW minimum code size
+*320:   0B          11            - 11 bytes of LZW encoded image data follow
+*321:   00 51 FC 1B 28 70 A0 C1 83 01 01
+*32C:   00                        - end of image data
+*32D:   3B                       GIF file terminator
+*******************************************************************
+* Méthode de détermination type de fichier : Commence par le header du format GIF
+*******************************************************************
+  DATA: lv_raw_height(2)  TYPE x,
+        lv_raw_width(2)   TYPE x,
+        lv_inv1           TYPE x,
+        lv_inv2           TYPE x.
+  DATA lo_igs_imgconv     TYPE REF TO cl_igs_image_converter.
+  DATA lv_height          TYPE i.
+  DATA lv_width           TYPE i.
+  DATA lv_new_width       TYPE i.
+  DATA lv_new_height      TYPE i.
+
+  DATA: lv_img_blob       TYPE w3mimetabtype,
+        lv_img_size       TYPE w3param-cont_len.
+
+  DATA ratio              TYPE float.
+
+* Inversion de byte.
+  lv_inv1 = i_file+6(1).
+  lv_inv2 = i_file+7(1).
+  CONCATENATE lv_inv2 lv_inv1 INTO lv_raw_width IN BYTE MODE.
+  lv_inv1 = i_file+8(1).
+  lv_inv2 = i_file+9(1).
+  CONCATENATE lv_inv2 lv_inv1 INTO lv_raw_height IN BYTE MODE.
+
+  lv_height = lv_raw_height.
+  lv_width = lv_raw_width.
+
+  CREATE OBJECT lo_igs_imgconv
+    EXPORTING
+      destination = &apos;IGS_RFC_DEST&apos;.
+
+  lv_img_size = XSTRLEN( i_file ).
+
+  CALL FUNCTION &apos;SCMS_XSTRING_TO_BINARY&apos;
+    EXPORTING
+      buffer     = i_file
+    TABLES
+      binary_tab = lv_img_blob.
+
+  CALL METHOD lo_igs_imgconv-&gt;set_image
+    EXPORTING
+      blob      = lv_img_blob
+      blob_size = lv_img_size.
+
+  lo_igs_imgconv-&gt;input  = &apos;image/gif&apos;.
+  lo_igs_imgconv-&gt;output = &apos;image/gif&apos;.
+
+  IF NOT height IS INITIAL AND width IS INITIAL.
+    ratio = height * 100 / lv_height.
+    lv_new_height = height.
+    lv_new_width = lv_width * ratio / 100.
+
+  ELSEIF height IS INITIAL AND NOT width IS INITIAL.
+    ratio = width * 100 / lv_width.
+    lv_new_height = lv_height * ratio / 100.
+    lv_new_width = width.
+  ELSE.
+    lv_new_height = height.
+    lv_new_width = width.
+  ENDIF.
+
+  lo_igs_imgconv-&gt;height  = lv_new_height.
+  lo_igs_imgconv-&gt;width   = lv_new_width.
+
+  CALL METHOD lo_igs_imgconv-&gt;execute
+    EXCEPTIONS
+      OTHERS = 1.
+
+  IF sy-subrc EQ 0.
+    CALL METHOD lo_igs_imgconv-&gt;get_image
+      IMPORTING
+        blob      = lv_img_blob
+        blob_size = lv_img_size.
+
+    CALL FUNCTION &apos;SCMS_BINARY_TO_XSTRING&apos;
+      EXPORTING
+        input_length = lv_img_size
+      IMPORTING
+        buffer       = r_thumbnail_url
+      TABLES
+        binary_tab   = lv_img_blob.
+    IF sy-subrc IS NOT INITIAL.
+    ENDIF.
+
+  ENDIF.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="RESIZE_JPEG" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Modification image JPEG"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="I_FILE" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="R_THUMBNAIL_URL" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARDECLTYP="3" TYPTYPE="1" TYPE="XSTRING"/>
+     </PARAMETERS>
+     <SOURCE>`
+*******************************************************************
+*/
+*Short name Bytes               Payload       Name                          Comments
+*SOI        0xFF, 0xD8          none          Start Of Image
+*SOF0       0xFF, 0xC0          variable size Start Of Frame                (Baseline DCT)  Indicates that this is a baseline DCT-based JPEG, and specifies the width, height, number of components, and component subsampling (e.g., 4:2:0).
+*SOF2       0xFF, 0xC2          variable size Start Of Frame                (Progressive DCT) Indicates that this is a progressive DCT-based JPEG, and specifies the width, height, number of components, and component subsampling (e.g., 4:2:0).
+*DHT        0xFF, 0xC4          variable size Define Huffman Table(s)       Specifies one or more Huffman tables.
+*DQT        0xFF, 0xDB          variable size Define Quantization Table(s)  Specifies one or more quantization tables.
+*DRI        0xFF, 0xDD          2 bytes       Define Restart Interval       Specifies the interval between RSTn markers, in macroblocks. This marker is followed by two bytes indicating the fixed size so it can be treated like any other variable size
+*                                                                           segment.
+*SOS        0xFF, 0xDA          variable size Start Of Scan                 Begins a top-to-bottom scan of the image. In baseline DCT JPEG images, there is generally a single scan. Progressive DCT JPEG images usually contain multiple scans. This marker
+*                                                                           specifies which slice of data it will contain, and is immediately followed by entropy-coded data.
+*RSTn       0xFF, 0xDn (n=0..7) none          Restart                       Inserted every r macroblocks, where r is the restart interval set by a DRI marker. Not used if there was no DRI marker. The low 3 bits of the marker code cycle in value from 0 to
+*                                                                           7.
+*APPn       0xFF, 0xEn          variable size Application-specific          For example, an Exif JPEG file uses an APP1 marker to store metadata, laid out in a structure based closely on TIFF.
+*COM        0xFF, 0xFE          variable size Comment                       Contains a text comment.
+*EOI        0xFF, 0xD9          none          End Of Image
+*******************************************************************
+* Méthode de détermination type de fichier : Commence par le marqueur SOI et fini par le marqueur EOI
+*******************************************************************
+
+  DATA: lv_result         TYPE match_result,
+        lv_raw_height(2)  TYPE x,
+        lv_raw_width(2)   TYPE x,
+        lv_offset         TYPE i,
+        lv_hint           TYPE int1,
+        lv_lint           TYPE int1.
+  DATA lo_igs_imgconv     TYPE REF TO cl_igs_image_converter.
+  DATA lv_height          TYPE i.
+  DATA lv_width           TYPE i.
+  DATA lv_new_width       TYPE i.
+  DATA lv_new_height      TYPE i.
+
+  DATA: lv_img_blob       TYPE w3mimetabtype,
+        lv_img_size       TYPE w3param-cont_len.
+
+  DATA ratio              TYPE float.
+
+  FIND FIRST OCCURRENCE OF zcl_util_img=&gt;ident_jpeg_size
+    IN i_file IN BYTE MODE RESULTS lv_result.
+
+  lv_offset     = lv_result-offset + 5.
+
+  lv_raw_height = i_file+lv_offset(2).
+  lv_hint       = lv_raw_height(1).
+  lv_lint       = lv_raw_height+1(1).
+  lv_height     = lv_hint * 256 + lv_lint.
+
+  lv_offset     = lv_offset + 2.
+
+  lv_raw_width  = i_file+lv_offset(2).
+  lv_hint       = lv_raw_width(1).
+  lv_lint       = lv_raw_width+1(1).
+  lv_width      = lv_hint * 256 + lv_lint.
+
+  CREATE OBJECT lo_igs_imgconv
+    EXPORTING
+      destination = &apos;IGS_RFC_DEST&apos;.
+
+  lv_img_size = XSTRLEN( i_file ).
+
+  CALL FUNCTION &apos;SCMS_XSTRING_TO_BINARY&apos;
+    EXPORTING
+      buffer     = i_file
+    TABLES
+      binary_tab = lv_img_blob.
+
+  CALL METHOD lo_igs_imgconv-&gt;set_image
+    EXPORTING
+      blob      = lv_img_blob
+      blob_size = lv_img_size.
+
+  lo_igs_imgconv-&gt;input  = &apos;image/jpeg&apos;.
+  lo_igs_imgconv-&gt;output = &apos;image/jpeg&apos;.
+
+  IF NOT height IS INITIAL AND width IS INITIAL.
+    ratio = height * 100 / lv_height.
+    lv_new_height = height.
+    lv_new_width = lv_width * ratio / 100.
+
+  ELSEIF height IS INITIAL AND NOT width IS INITIAL.
+    ratio = width * 100 / lv_width.
+    lv_new_height = lv_height * ratio / 100.
+    lv_new_width = width.
+  ELSE.
+    lv_new_height = height.
+    lv_new_width = width.
+  ENDIF.
+
+  lo_igs_imgconv-&gt;height  = lv_new_height.
+  lo_igs_imgconv-&gt;width   = lv_new_width.
+
+  CALL METHOD lo_igs_imgconv-&gt;execute
+    EXCEPTIONS
+      OTHERS = 1.
+
+  IF sy-subrc EQ 0.
+    CALL METHOD lo_igs_imgconv-&gt;get_image
+      IMPORTING
+        blob      = lv_img_blob
+        blob_size = lv_img_size.
+
+    CALL FUNCTION &apos;SCMS_BINARY_TO_XSTRING&apos;
+      EXPORTING
+        input_length = lv_img_size
+      IMPORTING
+        buffer       = r_thumbnail_url
+      TABLES
+        binary_tab   = lv_img_blob.
+    IF sy-subrc IS NOT INITIAL.
+    ENDIF.
+
+  ENDIF.</SOURCE>
+    </ITEM>
+    <ITEM CMPNAME="RESIZE_PNG" VERSION="1" EXPOSURE="1" STATE="1" EDITORDER="3 " AUTHOR="PIGNON_E" CREATEDON="20130131" R3RELEASE="700">
+     <TEXTS>
+      <ITEM LANG="F" TEXT="Méthode pour redimensionner un GIF"/>
+     </TEXTS>
+     <PARAMETERS>
+      <ITEM SCONAME="I_FILE" VERSION="1" CMPTYPE="1" EDITORDER="1 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="R_THUMBNAIL_URL" VERSION="1" CMPTYPE="1" EDITORDER="2 " AUTHOR="PIGNON_E" CREATEDON="20130131" PARDECLTYP="3" TYPTYPE="1" TYPE="XSTRING"/>
+     </PARAMETERS>
+     <SOURCE>`
+*******************************************************************
+*/ Format PNG                                                    /*
+*******************************************************************
+* Header                                                          *
+*-----------------------------------------------------------------*
+*Bytes      Purpose
+*89	        Has the high bit set to detect transmission systems that do not support 8 bit data and to reduce the chance that a text file is mistakenly interpreted as a PNG, or vice versa.
+*50 4E 47	  In ASCII, the letters PNG, allowing a person to identify the format easily if it is viewed in a text editor.
+*0D 0A      A DOS-style line ending (CRLF) to detect DOS-Unix line ending conversion of the data.
+*1A	        A byte that stops display of the file under DOS when the command type has been used—the end-of-file character
+*0A	        A Unix-style line ending (LF) to detect Unix-DOS line ending conversion.
+*******************************************************************
+* Méthode de détermination type de fichier : Commence par le header du format PNG
+*******************************************************************
+* Taille de l&apos;image tout de suite après précédé du &quot;chunk&quot; IHDR (73 72 68 82)
+*  Width  4 bytes
+*  Height	4 bytes
+*  Bit depth  1 byte
+*  Colour type  1 byte
+*  Compression method	1 byte
+*  Filter method  1 byte
+*  Interlace method	1 byte
+*******************************************************************
+  DATA: lv_raw_height(4)  TYPE x,
+        lv_raw_width(4)   TYPE x.
+  DATA lo_igs_imgconv     TYPE REF TO cl_igs_image_converter.
+  DATA lv_height          TYPE i.
+  DATA lv_width           TYPE i.
+  DATA lv_new_width       TYPE i.
+  DATA lv_new_height      TYPE i.
+
+  DATA: lv_img_blob       TYPE w3mimetabtype,
+        lv_img_size       TYPE w3param-cont_len.
+
+  DATA ratio              TYPE float.
+
+  lv_raw_height = i_file+12(4).
+  lv_raw_width = i_file+16(4).
+
+  lv_height = lv_raw_height.
+  lv_width = lv_raw_width.
+
+  CREATE OBJECT lo_igs_imgconv
+    EXPORTING
+      destination = &apos;IGS_RFC_DEST&apos;.
+
+  lv_img_size = XSTRLEN( i_file ).
+
+  CALL FUNCTION &apos;SCMS_XSTRING_TO_BINARY&apos;
+    EXPORTING
+      buffer     = i_file
+    TABLES
+      binary_tab = lv_img_blob.
+
+  CALL METHOD lo_igs_imgconv-&gt;set_image
+    EXPORTING
+      blob      = lv_img_blob
+      blob_size = lv_img_size.
+
+  lo_igs_imgconv-&gt;input  = &apos;image/png&apos;.
+  lo_igs_imgconv-&gt;output = &apos;image/png&apos;.
+
+  IF NOT height IS INITIAL AND width IS INITIAL.
+    ratio = height * 100 / lv_height.
+    lv_new_height = height.
+    lv_new_width = lv_width * ratio / 100.
+
+  ELSEIF height IS INITIAL AND NOT width IS INITIAL.
+    ratio = width * 100 / lv_width.
+    lv_new_height = lv_height * ratio / 100.
+    lv_new_width = width.
+  ELSE.
+    lv_new_height = height.
+    lv_new_width = width.
+  ENDIF.
+
+  lo_igs_imgconv-&gt;height  = lv_new_height.
+  lo_igs_imgconv-&gt;width   = lv_new_width.
+
+  CALL METHOD lo_igs_imgconv-&gt;execute
+    EXCEPTIONS
+      OTHERS = 1.
+
+  IF sy-subrc EQ 0.
+    CALL METHOD lo_igs_imgconv-&gt;get_image
+      IMPORTING
+        blob      = lv_img_blob
+        blob_size = lv_img_size.
+
+    CALL FUNCTION &apos;SCMS_BINARY_TO_XSTRING&apos;
+      EXPORTING
+        input_length = lv_img_size
+      IMPORTING
+        buffer       = r_thumbnail_url
+      TABLES
+        binary_tab   = lv_img_blob.
+    IF sy-subrc IS NOT INITIAL.
+    ENDIF.
+
+  ENDIF.</SOURCE>
+    </ITEM>
+   </METHODS>
+  </RAW>
+ </ZL_OBJECT>
+ <ZL_OBJECT CHECKSUM="4A05BF163FD6D16398126CC153FA2623" CODE_SIGNATURE="6433DA441C5C155556EF894786FADC32" CONNECTOR="39AC0A4B07A5A05AE1000000AC120173" NAME="ZCL_UTIL_IMG_STREAM" TYPE="CLAS" VERSION="1.01">
+  <DEPENDENCIES>
+   <ITEM TYPE="CLAS" NAME="ZCL_UTIL_IMG"/>
+  </DEPENDENCIES>
+  <DIRECTORY SRCSYSTEM="GG1" AUTHOR="GIRAUD_S" DEVCLASS="Z_RAPS_GMAO_PM" MASTERLANG="F"/>
+  <RAW>
+   <A0_MAINDATA VERSION="1" LANGU="F" EXPOSURE="2" STATE="1" AUTHOR="GIRAUD_S" CREATEDON="20130201" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="700">
+    <INHERITANCE REFCLSNAME="ZCL_UTIL_IMG" VERSION="1" STATE="1" AUTHOR="GIRAUD_S" CREATEDON="20130201" CHANGEDBY="GIRAUD_S" CHANGEDON="20130201"/>
+   </A0_MAINDATA>
+   <LOCAL>
+    <TYPES>`
+*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</TYPES>
+    <IMPLEMENTATIONS>`
+*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</IMPLEMENTATIONS>
+    <MACROS>`
+*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</MACROS>
+   </LOCAL>
+   <METHODS>
+    <ITEM CMPNAME="CONSTRUCTOR" VERSION="1" EXPOSURE="2" STATE="1" AUTHOR="GIRAUD_S" CREATEDON="20130201" MTDTYPE="2" R3RELEASE="700">
+     <PARAMETERS>
+      <ITEM SCONAME="I_HEIGHT" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="2 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+      <ITEM SCONAME="I_STREAM" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="1 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="XSTRING"/>
+      <ITEM SCONAME="I_THUMBNAIL" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="4 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="BOOLEAN">
+       <TEXTS>
+        <ITEM LANG="F" TEXT="var. booléenne (X=vrai, -=faux, espace=inconnu)"/>
+       </TEXTS>
+      </ITEM>
+      <ITEM SCONAME="I_WIDTH" VERSION="1" CMPTYPE="1" MTDTYPE="2" EDITORDER="3 " AUTHOR="GIRAUD_S" CREATEDON="20130201" PARPASSTYP="1" TYPTYPE="1" TYPE="I"/>
+     </PARAMETERS>
+     <SOURCE>`
+  super-&gt;constructor( ).
+
+  file      = i_stream.
+  height    = i_height.
+  width     = i_width.
+  thumbnail = i_thumbnail.
+
+  IF file IS NOT INITIAL.
+
+    CALL METHOD me-&gt;get_url_flux( ) .
+
+  ENDIF.</SOURCE>
+    </ITEM>
+   </METHODS>
+   <REDEFINITIONS>
+    <ITEM REFCLSNAME="ZCL_UTIL_IMG" VERSION="1" MTDNAME="RECUPERERIMAGE">
+     <SOURCE>`
+  e_file = me-&gt;file.
+  e_size = XSTRLEN( e_file ).</SOURCE>
+    </ITEM>
+   </REDEFINITIONS>
+  </RAW>
+ </ZL_OBJECT>
+</CONTAINER>
